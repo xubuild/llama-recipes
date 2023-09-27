@@ -9,7 +9,6 @@ import json
 import torch
 from torch.utils.data import Dataset
 
-
 PROMPT_DICT = {
     "prompt_input": (
         "Below is an instruction that describes a task, paired with an input that provides further context. "
@@ -23,13 +22,15 @@ PROMPT_DICT = {
     ),
 }
 
+
 class InstructionDataset(Dataset):
     def __init__(self, dataset_config, tokenizer, partition="train", max_words=30):
         self.ann = json.load(open(dataset_config.data_path))
+        test_num = 5000
         if partition == "train":
-            self.ann = self.ann
+            self.ann = self.ann[test_num:]
         else:
-            self.ann = self.ann[:200]
+            self.ann = self.ann[:test_num]
 
         self.max_words = max_words
         # tokenizer = Tokenizer(model_path=model_path + "./tokenizer.model")
@@ -41,7 +42,6 @@ class InstructionDataset(Dataset):
 
     def __getitem__(self, index):
         IGNORE_INDEX = -100  # The default setting in CrossEntropyLoss
-
 
         ann = self.ann[index]
         if ann.get("input", "") == "":
@@ -74,5 +74,5 @@ class InstructionDataset(Dataset):
         return {
             "input_ids": example,
             "labels": labels,
-            "attention_mask":example_mask,
+            "attention_mask": example_mask,
         }

@@ -13,6 +13,7 @@ from llama_recipes.datasets import (
     get_samsum_dataset,
 )
 
+import ft_datasets
 
 def load_module_from_py_file(py_file: str) -> object:
     """
@@ -60,8 +61,10 @@ DATASET_PREPROC = {
 def get_preprocessed_dataset(
     tokenizer, dataset_config, split: str = "train"
 ) -> torch.utils.data.Dataset:
-    if not dataset_config.dataset in DATASET_PREPROC:
-        raise NotImplementedError(f"{dataset_config.dataset} is not (yet) implemented")
+    # if not dataset_config.dataset in DATASET_PREPROC:
+    #     raise NotImplementedError(f"{dataset_config.dataset} is not (yet) implemented")
+
+
 
     def get_split():
         return (
@@ -69,7 +72,16 @@ def get_preprocessed_dataset(
             if split == "train"
             else dataset_config.test_split
         )
-    
+
+    if not dataset_config.dataset in DATASET_PREPROC:
+        print(f"load new dataset {dataset_config.dataset}")
+        return partial(getattr(ft_datasets, dataset_config.dataset), max_words=224)(
+            dataset_config,
+            tokenizer,
+            get_split(),
+        )
+        # raise NotImplementedError(f"{dataset_config.dataset} is not (yet) implemented")
+
     return DATASET_PREPROC[dataset_config.dataset](
         dataset_config,
         tokenizer,
