@@ -13,7 +13,7 @@ from llama_recipes.datasets import (
     get_samsum_dataset,
 )
 
-import ft_datasets
+import llama_recipes.datasets as ft_datasets
 
 def load_module_from_py_file(py_file: str) -> object:
     """
